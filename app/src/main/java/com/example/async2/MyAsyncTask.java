@@ -6,11 +6,14 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 import java.util.Random;
 
-public class MyAsyncTask extends AsyncTask<Void, Void, String> {
+public class MyAsyncTask extends AsyncTask<Void, Integer, String> {
     private WeakReference<TextView> mTextView;
+    private WeakReference<TextView> mResultView;
 
-    MyAsyncTask(TextView tv) {
+    MyAsyncTask(TextView tv, TextView result) {
+
         mTextView = new WeakReference<>(tv);
+        mResultView = new WeakReference<>(result);
     }
 
     @Override
@@ -22,6 +25,9 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
         //make the task take long enough se we can rotate the device while thread is running
         int s = n * 500;
+
+        //postPublish
+        publishProgress(s);
 
         //Sleep for a random amount of time
         try {
@@ -35,12 +41,13 @@ public class MyAsyncTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
+
         mTextView.get().setText(result);
     }
 
     @Override
-    protected void onProgressUpdate(Void... values) {
-        super.onProgressUpdate(values);
+    protected void onProgressUpdate(Integer... values) {
+        mResultView.get().setText("Current sleep time: " + values[0] + " ms");
     }
 }
 
